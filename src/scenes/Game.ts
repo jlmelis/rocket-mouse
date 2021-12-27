@@ -118,6 +118,9 @@ export default class Game extends Phaser.Scene {
             padding: { left: 15, right: 15, top: 10, bottom: 10 },
         })
         .setScrollFactor(0);
+
+
+        //this.input.enableDebug(this.mouse);
     }
 
     private handleCollectCoin(

@@ -11,6 +11,7 @@ enum MouseSate {
 
 export default class RocketMouse extends Phaser.GameObjects.Container {
     private mouseState = MouseSate.Running;
+    private flying = false;
 
     private flames: Phaser.GameObjects.Sprite;
     private mouse: Phaser.GameObjects.Sprite;
@@ -37,19 +38,42 @@ export default class RocketMouse extends Phaser.GameObjects.Container {
         body.setOffset(this.mouse.width * -0.5, -this.mouse.height);
 
         this.cursors = scene.input.keyboard.createCursorKeys();
+        
+
+        // does this make sense here or on the game?
+        var shape = new Phaser.Geom.Rectangle(
+            this.mouse.width * -0.5, 
+            -this.mouse.height, 
+            this.mouse.width, 
+            this.mouse.height
+        );
+        
+        this.setInteractive(shape, Phaser.Geom.Rectangle.Contains);
+
+        let thisContainer = this;
+        thisContainer.on('pointerover', function () {
+            console.log('rocket mouse clicked')
+            thisContainer.flying = true;
+        });
+
+        thisContainer.on('pointerout', function () {
+            console.log('rocket mouse lifted')
+            thisContainer.flying = false;
+        });
     }
+    
 
     preUpdate() {
         const body = this.body as Phaser.Physics.Arcade.Body;
         body.setSize(this.mouse.width * 0.5, this.mouse.height * 0.7);
         body.setOffset(this.mouse.width * -0.3, -this.mouse.height + 15);
 
-        switch (this.mouseState) {
+         switch (this.mouseState) {
             
             case MouseSate.Running: {
                 
-
-                if (this.cursors.space?.isDown) {
+                
+                if (this.cursors.space?.isDown || this.flying) {
                     body.setAccelerationY(-600);
                     this.enableJetpack(true);
         
